@@ -7,7 +7,7 @@ package model
 // )
 
 // func TestBooks(t *testing.T) {
-// 	b := GetBooks()
+// 	b := GetBooks("1")
 
 // 	assert.Equal(t, []Book{
 // 		{
