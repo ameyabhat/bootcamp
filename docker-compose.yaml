@@ -23,7 +23,7 @@ services:
     ports:
       - '5433:5432'
     volumes:
-      - ./src/migrations:/docker-entrypoint-initdb.d/
+      - ./api/src/migrations:/docker-entrypoint-initdb.d/
       - db:/var/lib/postgresql/data
 volumes:
   db:

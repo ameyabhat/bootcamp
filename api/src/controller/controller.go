@@ -35,6 +35,7 @@ func (pg *PgController) Serve() *gin.Engine {
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, "Failed to add a book")
+			panic(err)
 			return
 		}
 
