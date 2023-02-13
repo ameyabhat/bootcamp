@@ -10,11 +10,12 @@ type PgModel struct {
 
 type Model interface {
 	Book(string) Book
-	AddBooks(Book) (Book, error)
+	AllBooks() ([]Book, error)
+	AddBook(Book) (Book, error)
 }
 
 func (m *PgModel) Book(id string) Book {
-	book, err := GetBooksFromDB(m.Conn, id)
+	book, err := GetBookFromDB(m.Conn, id)
 
 	if err != nil {
 		panic(err)
@@ -23,12 +24,21 @@ func (m *PgModel) Book(id string) Book {
 	return book
 }
 
-func (m *PgModel) AddBooks(book Book) (Book, error) {
-	err := WriteBooksToDb(m.Conn, book)
+func (m *PgModel) AddBook(book Book) (Book, error) {
+	err := WriteBookToDb(m.Conn, book)
 
 	if err != nil {
 		return Book{}, err
 	}
 
 	return book, nil
+}
+
+func (m *PgModel) AllBooks() ([]Book, error) {
+	books, err := GetAllBooksFromDB(m.Conn)
+
+	if err != nil {
+		return []Book{}, err
+	}
+	return books, nil
 }

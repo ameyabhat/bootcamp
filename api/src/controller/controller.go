@@ -20,7 +20,15 @@ func (pg *PgController) Serve() *gin.Engine {
 	r := gin.Default()
 	r.GET("/v1/books/:bookId", func(c *gin.Context) {
 		id := c.Param("bookId")
+
 		c.JSON(http.StatusOK, pg.Book(id))
+	})
+	r.GET("/v1/books/", func(c *gin.Context) {
+		books, err := pg.AllBooks()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, "Oops")
+		}
+		c.JSON(http.StatusOK, books)
 	})
 
 	r.POST("/v1/addBook", func(c *gin.Context) {
@@ -31,7 +39,7 @@ func (pg *PgController) Serve() *gin.Engine {
 			return
 		}
 
-		_, err := pg.AddBooks(book)
+		_, err := pg.AddBook(book)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, "Failed to add a book")
