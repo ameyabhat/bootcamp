@@ -3,6 +3,7 @@ package controller
 import (
 	"generate/workshop/src/model"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,8 +21,12 @@ func (pg *PgController) Serve() *gin.Engine {
 	r := gin.Default()
 	r.GET("/v1/books/:bookId", func(c *gin.Context) {
 		id := c.Param("bookId")
+		intId, err := strconv.Atoi(id)
 
-		c.JSON(http.StatusOK, pg.Book(id))
+		if err != nil {
+			panic(err)
+		}
+		c.JSON(http.StatusOK, pg.Book(int64(intId)))
 	})
 	r.GET("/v1/books/", func(c *gin.Context) {
 		books, err := pg.AllBooks()
@@ -39,7 +44,7 @@ func (pg *PgController) Serve() *gin.Engine {
 			return
 		}
 
-		_, err := pg.AddBook(book)
+		insertedBook, err := pg.AddBook(book)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, "Failed to add a book")
@@ -47,7 +52,7 @@ func (pg *PgController) Serve() *gin.Engine {
 			return
 		}
 
-		c.JSON(http.StatusOK, book.BookId)
+		c.JSON(http.StatusOK, insertedBook)
 	})
 
 	return r

@@ -6,19 +6,24 @@ import (
 	"github.com/jackc/pgx"
 )
 
-func WriteBookToDb(pool *pgx.Conn, book Book) error {
-	_, err := pool.Exec(fmt.Sprintf("INSERT INTO books (book_id, title, author) VALUES ('%s','%s','%s');", book.BookId, book.Title, book.Author))
+func WriteBookToDb(pool *pgx.Conn, book Book) (Book, error) {
 
-	return err
+	err := pool.QueryRow(fmt.Sprintf("INSERT INTO books (title, author) VALUES ('%s','%s') RETURNING book_id;", book.Title, book.Author)).Scan(&book.BookId)
+
+	if err != nil {
+		return Book{}, err
+	}
+
+	return book, nil
 }
 
-func GetBookFromDB(pool *pgx.Conn, book_id string) (Book, error) {
+func GetBookFromDB(pool *pgx.Conn, book_id int64) (Book, error) {
 	book := Book{
 		BookId: book_id,
 	}
 
 	var bid int
-	err := pool.QueryRow(fmt.Sprintf("SELECT book_id, title, author FROM books where book_id = '%s';", book_id)).Scan(&bid, &book.Title, &book.Author)
+	err := pool.QueryRow(fmt.Sprintf("SELECT book_id, title, author FROM books where book_id = '%d';", book_id)).Scan(&bid, &book.Title, &book.Author)
 
 	if err != nil {
 		panic(err)
