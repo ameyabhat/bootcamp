@@ -4,10 +4,9 @@ import (
 	"generate/workshop/src/model"
 	"net/http"
 	"strconv"
-	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	cors "github.com/rs/cors/wrapper/gin"
 )
 
 type Controller interface {
@@ -21,6 +20,8 @@ type PgController struct {
 // Everything above here is going to move to a  folder (controller layer)
 func (pg *PgController) Serve() *gin.Engine {
 	r := gin.Default()
+
+	r.Use(cors.AllowAll())
 	r.GET("/v1/books/:bookId", func(c *gin.Context) {
 		id := c.Param("bookId")
 		intId, err := strconv.Atoi(id)
@@ -57,16 +58,5 @@ func (pg *PgController) Serve() *gin.Engine {
 		c.JSON(http.StatusOK, insertedBook)
 	})
 
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		AllowOriginFunc: func(origin string) bool {
-			return origin == "https://github.com"
-		},
-		MaxAge: 12 * time.Hour,
-	}))
 	return r
 }
