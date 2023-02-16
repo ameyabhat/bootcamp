@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	cors "github.com/rs/cors/wrapper/gin"
 )
 
 type Controller interface {
@@ -21,7 +21,7 @@ type PgController struct {
 func (pg *PgController) Serve() *gin.Engine {
 	r := gin.Default()
 
-	r.Use(cors.AllowAll())
+	r.Use(cors.Default())
 	r.GET("/v1/books/:bookId", func(c *gin.Context) {
 		id := c.Param("bookId")
 		intId, err := strconv.Atoi(id)

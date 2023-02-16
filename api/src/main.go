@@ -42,5 +42,6 @@ func main() {
 	c := &controller.PgController{
 		Model: m,
 	}
+
 	c.Serve().Run(":8080")
 }
